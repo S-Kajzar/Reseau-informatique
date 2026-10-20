@@ -68,7 +68,7 @@ suivi par git (`.gitignore`), donc pas publié.
 adressage IP et LAN, communication entre logiciels, modèle OSI), avec la problématique, les objectifs et les
 prérequis ; viennent s'y ajouter une synthèse en six cartes à retourner, deux jeux (« Adresse MAC ou adresse IP ? »,
 8 lignes ; « À quelle couche du modèle OSI ? », 8 lignes) et un quiz de 10 questions. Liens en pied de page vers le
-QCM 1.1, les exercices 1.2, 1.3 et 2.1 et l'étude 1.
+QCM 1.1, les exercices 1.2, 1.3, 1.4 et 2.1 et l'étude 1.
 
 Les 18 figures du Word sont des captures de manuel : aucune n'est reprise, toutes sont **redessinées en SVG** et
 rendues interactives (`src/cours_reseaux.py`), numérotées de 1 à 18 :
@@ -178,6 +178,41 @@ point d'accès Wi-Fi) et six appareils. 4 parties (10, 12, 12 et 11 min, soit 45
   débit d'une transmission (48 Mbit/s), pourquoi le Wi-Fi est plus lent.
 - Documents : DP1, le réseau de la maison (appareils, liaisons, adresses, débits) ; DT1, adresses IP, masques et débit.
 
+## Exercice 1.4 — Le voyage d'une vidéo YouTube (Niveau 1, `?ex=video-youtube`)
+
+Une vidéo suivie du serveur au smartphone (`src/exo_video.py`) : Léa la regarde sur son smartphone 5G ; une vidéo
+populaire vient du serveur cache de son opérateur, une vidéo rare d'un centre de données en Virginie par le câble
+sous-marin Dunant ; un bateau la reçoit par satellite. 4 parties (10, 10, 12 et 8 min, soit 40 min), 18 questions,
+23 cases.
+- **Le chemin de la vidéo** : centre de données, routeur, serveur cache et antenne relais, puis les supports (fibre
+  optique sous l'océan et jusqu'à l'antenne, ondes radio jusqu'au smartphone), posés sur le schéma ; par où passent
+  les données entre continents ; d'où vient le plus probablement une vidéo populaire.
+- **Débit et qualité de la vidéo** : le débit recommandé pour le 1080p, la meilleure qualité possible à 3 Mbit/s
+  (720p), le volume de 10 min en 1080p (375 Mo), la durée de vidéo que permet un forfait de 15 Go (400 min), la
+  diffusion adaptative quand le débit baisse.
+- **Le temps de trajet** : la vitesse dans la fibre (v = c / n = 200 000 km/s), la traversée du câble Dunant
+  (32 ms), le trajet par satellite géostationnaire (239 ms) et en orbite basse (3,7 ms), le trajet le plus gênant
+  pour un appel vidéo. La **course des paquets** (figure 2) fait partir quatre paquets au même instant, au ralenti,
+  chacun pendant la durée calculée ; elle montre les réponses, donc son bouton reste verrouillé tant que la partie 3
+  n'est pas corrigée (ou la copie d'examen remise).
+- **L'antenne relais 4G/5G** : la part des sites 5G dans la bande 3,5 GHz (69 %), le nombre de spectateurs en 1080p
+  que permettent 240 Mbit/s partagés (48), pourquoi la bande 3,5 GHz demande plus d'antennes, les liaisons sans fil.
+- **Données et sources**, citées et datées dans les documents (liens) : débits recommandés par YouTube (aide YouTube,
+  configuration requise) ; serveurs cache, 70 à 90 % du trafic pouvant être mis en cache (Google Global Cache) ; câble
+  Dunant, 6 400 km, 250 Tbit/s, en service depuis 2021 (DCD) ; plus de 99 % du trafic intercontinental par câble
+  (TeleGeography, 2023) ; 15 Go par mois et par utilisateur au 1er trimestre 2024, seuils de 3, 8 et 30 Mbit/s de
+  la campagne 2024 (Arcep) ; 240 Mbit/s sur 75 % des sites 5G (obligation Arcep) ; 52 069 sites 5G autorisés dont
+  35 798 en 3,5 GHz au 1er août 2025 (ANFR) ; vidéo, environ les trois quarts du trafic mobile fin 2024 (ComCom,
+  d'après Ericsson) ; altitudes des satellites (Futura-Sciences, GeekWire). Les valeurs ont été relevées par un moteur
+  de recherche, les pages de l'Arcep et de l'aide YouTube n'étant pas joignables depuis l'environnement de travail :
+  à relire sur les pages elles-mêmes avant une utilisation en classe.
+- **Choix** : depuis 2024, l'Arcep ne publie plus de débit mobile moyen mais la part des mesures au-dessus de seuils ;
+  l'exercice prend le seuil de 3 Mbit/s. La vitesse dans la fibre est recalculée à partir de l'indice du verre
+  (n ≈ 1,5). La distance du serveur cache (20 km) est une hypothèse de l'exercice, annoncée comme telle. Les durées ne
+  comptent que la propagation du signal.
+- Documents : DP1, la vidéo de Léa (le chemin et ses étapes) ; DT1, débits et consommation ; DT2, distances, vitesses
+  et antennes.
+
 ## Exercice 2.1 — Suivre une requête à travers le réseau (Niveau 2, `?ex=requete-http`)
 
 L'approfondissement du modèle OSI (`src/exo_requete.py`) : l'ordinateur portable de la maison demande une page à un
@@ -243,8 +278,8 @@ l'illustration de l'accueil (1120 × 620) et, par recadrage, les images des cart
 grisées par la page. Les cartes des contenus sont tirées de leurs figures, photographiées dans la page par
 `outils/captures.js` : le parcours d'un message à travers les couches (cours 1), le maillage de routeurs (QCM 1.1),
 l'éditeur du site avec son aperçu (exercice 1.2), le schéma de la maison et celui de la médiathèque, étiquettes
-posées et validées (exercice 1.3, étude 1), le trajet animé de la requête au-dessus de sa trame complétée
-(exercice 2.1). Poids : `index.html` 1 066 Kio (421 Kio d'images).
+posées et validées (exercice 1.3, exercice 1.4, étude 1), le trajet animé de la requête au-dessus de sa trame
+complétée (exercice 2.1). Poids : `index.html` 1 159 Kio (454 Kio d'images).
 
 ## Vérifications effectuées
 
@@ -273,14 +308,16 @@ posées et validées (exercice 1.3, étude 1), le trajet animé de la requête a
   aperçu avec l'image et la feuille de style, liens et retour, couleur CSS mal écrite refusée, 18,9/20, critère validé
   figé ; erreur 404, clavier, coloration, réinitialisation, archive .zip, impression du code, téléphone ; examen
   3,3/20).
-- `tests/exercices.test.js` : 11 tests, correcteurs (Node) puis parcours (Playwright) — exercices 1.3 et 2.1, étude 1 :
+- `tests/exercices.test.js` : 13 tests, correcteurs (Node) puis parcours (Playwright) — exercices 1.3, 1.4 et 2.1,
+  étude 1 :
   parties, durées et cases ; une copie juste dont chaque réponse est acceptée ; pour chaque case à étiquette, la bonne
   est la seule acceptée de sa liste ; formes admises (unités, espaces) et erreurs courantes refusées (adresse voisine,
   mauvais réseau, durée au mauvais débit) ; dans le navigateur, la copie juste vaut 20,0/20 pour chacun ; exercice
   1.3 : mauvaise étiquette corrigée sur le schéma ; exercice 2.1 : animation verrouillée jusqu'à la correction de la
   dernière question de la partie 4, puis trajet complet et adresses de la dernière étape ; en examen, déverrouillée à
-  la remise ; étude 1 : carte de la rubrique « Études de cas », documents, examen sur la première partie 4,6/20
-  (15 min sur 65).
+  la remise ; exercice 1.4 : schéma, sources citées dans chaque document, course des paquets verrouillée jusqu'à la
+  correction de la dernière question de la partie 3, puis durées d'arrivée égales aux réponses ; étude 1 : carte de
+  la rubrique « Études de cas », documents, examen sur la première partie 4,6/20 (15 min sur 65).
 - Aucune erreur JavaScript dans aucun parcours.
 
 ## À faire

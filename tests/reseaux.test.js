@@ -282,7 +282,8 @@ test("cours 1 : jeux, quiz, cartes, impression, liens vers les exercices", async
   assert.ok(!(await page.isVisible(".cours-nav")));
   await page.emulateMedia({ media: "screen" });
   assert.deepEqual(await page.locator(".cours-foot a").evaluateAll((l) => l.map((a) => a.getAttribute("href"))),
-    ["?ex=qcm-reseaux", "?ex=site-html", "?ex=adressage-maison", "?ex=requete-http", "?ex=etude-mediatheque", "?"]);
+    ["?ex=qcm-reseaux", "?ex=site-html", "?ex=adressage-maison", "?ex=video-youtube", "?ex=requete-http",
+      "?ex=etude-mediatheque", "?"]);
   assert.deepEqual(errors, []);
   await context.close();
 });

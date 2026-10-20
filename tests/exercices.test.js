@@ -1,4 +1,4 @@
-// Exercices 1.3 et 2.1, étude de cas 1 (index.html) : correcteurs (Node), puis copies complètes dans le navigateur
+// Exercices 1.3, 1.4 et 2.1, étude de cas 1 (index.html) : correcteurs (Node), puis copies complètes dans le navigateur
 // (Playwright + Chromium).
 //   NODE_PATH=$(npm root -g) node --test tests/exercices.test.js
 const test = require("node:test");
@@ -38,6 +38,13 @@ const COPIES = {
     txt: { r2_3: "4", r4_3_1: "203.0.113.80", r4_3_2: "86.245.12.40", r4_4: "192.168.1.30" },
     qcm: { r1_2: ["B"], r1_3: ["A"], r2_4: [1, 2], r3_2: ["A"], r4_2: [1, 2] },
   },
+  "video-youtube": {
+    etq: { v1_1_1: "Centre de données", v1_1_2: "Routeur", v1_1_3: "Serveur cache", v1_1_4: "Antenne relais",
+      v1_2_1: "Fibre optique", v1_2_2: "Fibre optique", v1_2_3: "Ondes radio" },
+    txt: { v2_1: "5 Mbit/s", v2_3: "375 Mo", v2_4: "400 min", v3_1: "200 000 km/s", v3_2: "32 ms", v3_3: "239 ms",
+      v3_4: "3,7 ms", v4_1: "69 %", v4_2: "48" },
+    qcm: { v1_3: ["A"], v1_4: ["A"], v2_2: ["C"], v2_5: ["A"], v3_5: ["A"], v4_3: ["A"], v4_4: [1, 2] },
+  },
   "etude-mediatheque": {
     etq: { e1_1_1: "Routeur", e1_1_2: "Switch", e1_1_3: "Point d'accès Wi-Fi", e1_2_1: "Fibre optique",
       e1_2_2: "Câble Ethernet", e4_1_1: "Transmise par le routeur", e4_1_2: "Bloquée par le routeur",
@@ -49,7 +56,7 @@ const COPIES = {
       e4_3: ["C"], e4_5: [1, 2] },
   },
 };
-const CLE = { a: "adressage-maison", r: "requete-http", e: "etude-mediatheque" };
+const CLE = { a: "adressage-maison", v: "video-youtube", r: "requete-http", e: "etude-mediatheque" };
 const cle = (id) => CLE[id[0]];
 const qid = (id) => (id in EXOS[cle(id)].qcfg ? id : id + "_1");
 const juste = (id, rep) => G.grade(String(rep), EXOS[cle(id)].qcfg[qid(id)].grader).ok;
@@ -58,6 +65,8 @@ const juste = (id, rep) => G.grade(String(rep), EXOS[cle(id)].qcfg[qid(id)].grad
 test("configuration : parties, durées, cases et points de chaque exercice", () => {
   const attendu = {
     "adressage-maison": [["Le schéma du réseau", "Le tableau d'adressage", "Des adresses à choisir", "Le débit de la connexion"], 45, 28],
+    "video-youtube": [["Le chemin de la vidéo", "Débit et qualité de la vidéo", "Le temps de trajet",
+      "L'antenne relais 4G/5G"], 40, 23],
     "requete-http": [["Les appareils et leurs couches", "L'encapsulation de la requête", "Les adresses dans la maison",
       "Au centre de données, puis la réponse"], 45, 30],
     "etude-mediatheque": [["L'architecture du réseau", "Le plan d'adressage", "Le choix des matériels et les débits",
@@ -97,14 +106,20 @@ test("étiquettes des trois exercices : la bonne est la seule acceptée de sa li
 });
 
 test("cases saisies : formes admises, erreurs courantes refusées", () => {
-  const ok = { a2_1_1: ["192.168.1", " 192.168.1 "], a4_1: ["400 s", "400s", "400 secondes", "400,0 s"],
+  const ok = { v2_3: ["375 Mo", "375 mégaoctets"], v2_4: ["400 minutes"], v3_1: ["200000 km/s"], v3_2: ["32 ms", "32,0 ms"],
+    v3_3: ["238 ms", "238,6 ms", "240 ms"], v3_4: ["3,7 ms", "3.67 ms"], v4_1: ["69 %", "68,8 %", "69"],
+    a2_1_1: ["192.168.1", " 192.168.1 "], a4_1: ["400 s", "400s", "400 secondes", "400,0 s"],
     a4_2: ["1333 s", "1 333 s", "1334 s"], a4_3: ["48 Mbit/s", "48 mbits/s"], e3_4: ["750 Mbit/s", "750 Mbps"],
     e3_5: ["1440 s", "1 440 secondes"], e3_6: ["16 s"], e2_1_6: ["192.168.20.110"], r4_4: ["192.168.1.30"] };
   const ko = { a2_1_1: ["192.168.1.0", "192.168.1.10"], a3_2: ["192.168.1.31", "192.168.1.320"],
     a4_1: ["50 s", "3200 s"], a4_3: ["6 Mbit/s", "24 Mbit/s"], e2_1_1: ["192.168.20.1", "192.168.10.0"],
     e2_1_6: ["192.168.10.110", "192.168.20.10"], e2_2: ["99", "249"], e3_1: ["10", "11"],
     e3_4: ["1000 Mbit/s", "350 Mbit/s"], e3_5: ["180 s", "720 s"], e3_6: ["2 s", "128 s"],
-    e4_4: ["192.168.20.1", "192.168.20.163"], r4_3_2: ["192.168.1.30"], r4_4: ["86.245.12.40"] };
+    e4_4: ["192.168.20.1", "192.168.20.163"], r4_3_2: ["192.168.1.30"], r4_4: ["86.245.12.40"],
+    // exercice 1.4 : 3 000 Mbit (oubli de la division par 8), 0,032 s (autre unité : un demi-point, refusée)…
+    v2_3: ["3000 Mo", "46,9 Mo"], v2_4: ["24000 min", "6,7 min", "100 min"], v3_1: ["450 000 km/s", "300 000 km/s"],
+    v3_2: ["0,032 s", "21 ms", "3,2 ms"], v3_3: ["119 ms", "477 ms"], v3_4: ["1,8 ms", "37 ms"], v4_1: ["31 %", "0,69"],
+    v4_2: ["12", "1200"] };
   for (const [id, l] of Object.entries(ok)) for (const r of l) assert.ok(juste(id, r), `${id} : ${r}`);
   for (const [id, l] of Object.entries(ko)) for (const r of l) assert.equal(juste(id, r), false, `${id} : ${r}`);
 });
@@ -180,6 +195,29 @@ test("exercice 1.3 : schéma de la maison, mauvaise étiquette corrigée sur le 
   await context.close();
 });
 
+test("exercice 1.4 : schéma du chemin, course des paquets verrouillée jusqu'à la correction de la partie 3", async () => {
+  const k = "video-youtube", copie = COPIES[k];
+  const { context, page, errors } = await open(URL + "?ex=" + k, { reducedMotion: "reduce" });
+  await page.click("[data-mode=training]");
+  assert.equal(await page.locator("#plan-1 .dz-f").count(), 7);
+  // la source de chaque donnée est citée dans les documents
+  for (const doc of ["DP1", "DT1", "DT2"]) assert.ok(await page.locator(`#doc-${doc} a[href^='https://']`).count() >= 2, doc);
+  assert.ok(await page.locator("#vi-go").isDisabled());
+  await remplir(page, copie, (id) => id.startsWith("v3_"));
+  for (const id of ["v3_1", "v3_2", "v3_3", "v3_4"]) await valider(page, id);
+  await page.waitForTimeout(700);
+  assert.ok(await page.locator("#vi-go").isDisabled(), "Q3.5 n'est pas encore corrigée");
+  await valider(page, "v3_5");
+  await page.waitForFunction(() => !document.getElementById("vi-go").disabled, null, { timeout: 3000 });
+  await page.click("#vi-go");
+  await page.waitForFunction(() => /Arrivée/.test(document.getElementById("vi-cap").textContent), null, { timeout: 10000 });
+  assert.equal(await page.locator("#vi-chrono").textContent(), "239 ms");
+  // les durées affichées à l'arrivée sont celles des réponses
+  assert.deepEqual(await page.locator(".vi-t").allTextContents(), ["0,1 ms", "3,7 ms", "32 ms", "239 ms"]);
+  assert.deepEqual(errors, []);
+  await context.close();
+});
+
 test("exercice 2.1 : l'animation du trajet attend la correction des parties 3 et 4, puis rejoue les adresses", async () => {
   const k = "requete-http", copie = COPIES[k];
   const { context, page, errors } = await open(URL + "?ex=" + k, { reducedMotion: "reduce" });
@@ -220,7 +258,8 @@ test("étude de cas 1 : rubrique de l'accueil, plan, documents, examen pondéré
   [["Étude 1 Niveau 2", "Le réseau d'une médiathèque", "?ex=etude-mediatheque"]]);
   assert.equal(await a.page.locator(".en-edition").count(), 0, "plus aucune rubrique « En cours d'édition »");
   assert.deepEqual(await a.page.locator(".exo-grid .mode-card h3").allInnerTexts(), ["QCM : réseaux informatiques",
-    "Mon premier site", "Le plan d'adressage de la maison", "Suivre une requête à travers le réseau"]);
+    "Mon premier site", "Le plan d'adressage de la maison", "Le voyage d'une vidéo YouTube",
+    "Suivre une requête à travers le réseau"]);
   await a.context.close();
   const { context, page, errors } = await open(URL + "?ex=etude-mediatheque");
   assert.match(await text(page, "#home .home-head"), /Étude 1[\s\S]*Niveau 2[\s\S]*Le réseau d'une médiathèque/);

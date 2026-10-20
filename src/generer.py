@@ -31,6 +31,7 @@ import cours_reseaux
 import etude_mediatheque
 import exo_adressage
 import exo_requete
+import exo_video
 import qcm
 import qcm_reseaux
 import site_html
@@ -1431,7 +1432,7 @@ def build(cours, exos, sortie, note=""):
 # pas d'import circulaire. L'ordre des listes est celui des cartes de l'accueil.
 _G = sys.modules[__name__]
 COURS.append(cours_reseaux.cours(_G))
-EXO_DEFS += [qcm_reseaux.exercice(_G), site_html.exercice(_G), exo_adressage.exercice(_G),
+EXO_DEFS += [qcm_reseaux.exercice(_G), site_html.exercice(_G), exo_adressage.exercice(_G), exo_video.exercice(_G),
              exo_requete.exercice(_G), etude_mediatheque.exercice(_G)]
 
 

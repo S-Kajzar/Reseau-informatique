@@ -38,6 +38,7 @@ entiere "$SRC/carte-cours-1.png" carte-cours-1.png                  # cours 1 : 
 remplir "$SRC/carte-qcm.png"     carte-qcm.png  "-colors 256"       # QCM 1.1 : maillage de routeurs
 remplir "$SRC/carte-site.png"    carte-site.png "-colors 256"       # exercice 1.2 : l'éditeur, code et aperçu
 entiere "$SRC/carte-ex13.png"    carte-ex13.png                     # exercice 1.3 : le schéma de la maison
+entiere "$SRC/carte-ex14.png"    carte-ex14.png                     # exercice 1.4 : le chemin de la vidéo
 tmp=$(mktemp --suffix=.png)                                          # exercice 2.1 : le trajet, puis la trame
 convert "$SRC/carte-ex21-trajet.png" "$SRC/carte-ex21-trame.png" -background white -gravity center -append "$tmp"
 entiere "$tmp"                   carte-ex21.png
