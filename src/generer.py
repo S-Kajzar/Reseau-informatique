@@ -27,6 +27,7 @@ import sys
 import types
 import unicodedata
 
+import cours_reseaux
 import qcm
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -146,14 +147,19 @@ def Q(stem, hint, grader, expected, why):
     return {"kind": "q", "stem": stem, "hint": hint, "grader": grader, "expected": expected, "why": why}
 
 
-def GRP(stem, hint, fields, why, etiquettes=None, liste="Étiquettes", reperes=None):
+def GRP(stem, hint, fields, why, etiquettes=None, liste="Étiquettes", reperes=None, auto=False):
     """Question à plusieurs cases validées ensemble (mécanisme « fast-q » du gabarit), une case = un point.
     fields : liste de (libellé de la case, correcteur, réponse attendue affichée dans la correction).
     etiquettes : liste d'étiquettes à glisser dans les cases (triées par ordre alphabétique à l'affichage) ; sans
     étiquettes, chaque case se remplit au clavier. liste : nom de la liste d'étiquettes, affiché dans le bandeau
     d'un schéma (deux questions d'une partie qui ont les mêmes étiquettes partagent la liste).
-    reperes : repères des cases sur le schéma de la partie (part["plan"]), un par case, dans l'ordre de fields."""
+    reperes : repères des cases sur le schéma de la partie (part["plan"]), un par case, dans l'ordre de fields.
+    auto : les cases sont des critères, remplis par le script de l'exercice (champs masqués : « oui », « non », ou
+    vide tant que l'élève n'a rien fait) ; la correction montre un exemple juste pour chaque critère."""
     g = {"kind": "grp", "stem": stem, "hint": hint, "fields": fields, "why": why}
+    if auto:
+        assert not etiquettes, "des critères vérifiés n'ont pas d'étiquettes"
+        g["auto"] = True
     if etiquettes:
         g["etiquettes"], g["bank_t"] = list(etiquettes), liste
     if reperes:
@@ -226,8 +232,11 @@ def render_grp(g, part):
     gid, label = g["id"], g["label"]
     plan = bool(g.get("zones"))
     a_etiquettes = bool(g.get("bank"))
+    auto = bool(g.get("auto"))
 
     def case(fid):
+        if auto:
+            return f'<input type="hidden" id="in-{fid}" data-q="{fid}">'
         if not a_etiquettes:
             return (f'<input type="text" class="grp-in" id="in-{fid}" data-q="{fid}" aria-labelledby="lb-{fid}" '
                     'autocomplete="off" autocapitalize="off" spellcheck="false">')
@@ -245,16 +254,19 @@ def render_grp(g, part):
             f'<span class="bank-t">Étiquettes</span>{etiquettes(g["bank"])}</div>')
     sol = "".join(f"<tr><td>{fl}</td><td>{e}</td></tr>" for fl, _g, e in g["fields"])
     n = len(g["fields"])
+    bouton = (f"Faire vérifier mon code ({n} critère{'s' if n > 1 else ''})" if auto else
+              f"Valider {'les ' + str(n) + ' cases' if n > 1 else 'la case'}")
+    entetes = ("<th>Critère</th><th>Exemple de code juste</th>" if auto else "<th>Case</th><th>Réponse attendue</th>")
     return f"""
-        <div class="fast-q grp{' sur-plan' if plan else ''}" id="{gid}">
+        <div class="fast-q grp{' sur-plan' if plan else ''}{' grp-auto' if auto else ''}" id="{gid}">
           <p class="q-stem"><span class="q-num">{label}</span> <strong>{g['stem']}</strong></p>
           <p class="q-hint">{g['hint']}</p>{bank}
           <div class="grp-fields" role="group" aria-label="Cases de la question {label}">{rows}</div>
-          <div class="fast-foot"><button type="button" class="btn btn-fast">Valider {'les ' + str(n) + ' cases' if n > 1 else 'la case'}</button>
+          <div class="fast-foot"><button type="button" class="btn btn-fast">{bouton}</button>
             <span class="q-status" aria-live="polite"></span></div>
           <p class="q-msg" role="alert"></p>
           <div class="q-expl" hidden>
-            <table class="t grp-sol"><thead><tr><th>Case</th><th>Réponse attendue</th></tr></thead><tbody>{sol}</tbody></table>
+            <table class="t grp-sol"><thead><tr>{entetes}</tr></thead><tbody>{sol}</tbody></table>
             <div class="q-why"><p class="why-t">Démarche</p>{g['why']}</div>
           </div>
         </div>"""
@@ -380,6 +392,10 @@ def render_part(p):
   </section>"""
 
 
+# nom des points d'un exercice : (accueil, cartouche, précision) ; un exercice peut donner le sien (clé unite)
+UNITE_CASES = ("cases", "cases notées", "un point chacune")
+
+
 def prepare_exo(e):
     """Copie et numérote les parties d'un exercice (Q1.1, Q1.2…) ; calcule sa configuration pour les moteurs."""
     parts = copy.deepcopy(e["parts"])
@@ -427,8 +443,9 @@ def prepare_exo(e):
                     qcfg[fid] = {"label": f"{b['label']} — {re.sub(r'<[^>]+>', '', fl)}", "part": p["num"],
                                  "pts": 1, "grader": g}
     np_ = len(parts)
+    unite = e.get("unite", UNITE_CASES)
     e["cfg"] = {"title": e["title"], "minutes": e["minutes"], "duree": hm(e["minutes"]),
-                "cartouche": f"{e['n_q']} questions" + ("" if e.get("qcm") else f", {e['n_cases']} cases notées") +
+                "cartouche": f"{e['n_q']} questions" + ("" if e.get("qcm") else f", {e['n_cases']} {unite[1]}") +
                              f", réparties en {np_} partie"
                              f"{'s' if np_ > 1 else ''} pondérée{'s' if np_ > 1 else ''} par leur durée.",
                 "parts": parts_cfg, "qcfg": qcfg, "skcfg": {}}
@@ -464,7 +481,7 @@ def render_exo_home(e):
              (f'<div><b>{len(docs)} document{"s" if len(docs) > 1 else ""}</b><span>{docs_txt}</span></div>' if docs else
               '<div><b>Une réponse</b><span>ou plusieurs, à choisir</span></div>') +
              (f'<div><b>{e["n_q"]} points</b><span>un par question</span></div></div>' if e.get("qcm") else
-              f'<div><b>{e["n_cases"]} cases</b><span>un point chacune</span></div></div>'))
+              f'<div><b>{e["n_cases"]} {e.get("unite", UNITE_CASES)[0]}</b><span>{e.get("unite", UNITE_CASES)[2]}</span></div></div>'))
     return (f'<div class="home-top"><div class="home-top-l"><header class="home-head"><span class="mc-tag">{e["tag"]}</span>{pastille(e.get("level"))}'
             f'<h1 id="home-title">{e["title"]}</h1><p class="home-sub">{e["sub"]}</p></header>{facts}</div>'
             f'<figure class="home-hero"><img src="{src}" alt="{esc(e["hero"][1])}" width="{w}" height="{h}">'
@@ -516,7 +533,8 @@ def consignes(*paragraphes):
 #   key (adresse ?ex=…), prefix (une lettre, propre à l'exercice : identifiants des questions), tag (« Exercice 1.1 »,
 #   le premier chiffre donne le niveau), level (« Niveau 1 » ou « Niveau 2 »), title, sub (présentation), parts,
 #   docs (liste de DOC), consignes, hero (image, texte alternatif, légende), mots (3 à 5 mots-clés de la carte),
-#   vign et valt (image de la carte, 480 × 270, et son texte alternatif), qcm (True pour un QCM), etude.
+#   vign et valt (image de la carte, 480 × 270, et son texte alternatif), qcm (True pour un QCM), etude ; au besoin
+#   unite (nom des points, voir UNITE_CASES), js et css (script et style propres à l'exercice, ajoutés à la page).
 EXO_DEFS = []
 
 
@@ -917,6 +935,13 @@ CONTENT_CSS = """<style>
 .q-why .why-t{font:700 .95rem var(--f-titre); margin:.6rem 0 .2rem}
 .q-why .compo{max-width:640px}
 @media (max-width:620px){ .grp-l{grid-template-columns:minmax(0,1fr)} }
+/* critères vérifiés dans le code de l'élève (GRP auto) : la case est masquée, seul son verdict s'affiche */
+.grp-auto .grp-l{grid-template-columns:minmax(0,1fr) 5.2em}
+.grp-auto .grp-lab{font-size:.93rem}
+.grp-auto .grp-lab::before{content:"☐"; margin-right:.45em; color:var(--encre-2)}
+.grp-auto .sol.is-ok~*,.grp-auto .grp-l:has(.is-ok) .grp-lab::before{content:"☑"; color:var(--vert)}
+.grp-auto .grp-l:has(.is-ko) .grp-lab::before{content:"☒"; color:var(--rouge)}
+.grp-auto .sol .mark{flex:1 1 auto}
 
 /* ---------- schémas à compléter (cases posées sur la figure, bandeau d'étiquettes collant) ---------- */
 .plan{margin:12px 0 16px}
@@ -1280,6 +1305,8 @@ def build(cours, exos, sortie, note=""):
     cours_js = (COURS_COMMUN_JS + "".join(c.get("js", "") for c in cours) + "\n  var INIT = {" +
                 ", ".join(f'"{c["key"]}": {c["init"]}' for c in cours if c.get("init")) + "};\n")
     cours_css = COURS_COMMUN_CSS + "".join(c.get("css", "") for c in cours) + qcm.QCM_CSS
+    exos_css = "".join(dict.fromkeys(e.get("css", "") for e in exos))
+    exos_js = "\n".join(x for x in dict.fromkeys(e.get("js", "") for e in exos) if x)
 
     config = f"<script>window.__EXOS__ = {json.dumps(exos_cfg, ensure_ascii=False)};</script>"
     router = (ROUTER_JS.replace("__COURS_JS__", cours_js).replace("__TITRE__", TITRE)
@@ -1293,7 +1320,7 @@ def build(cours, exos, sortie, note=""):
 <title>{TITRE} — cours et exercices interactifs</title>
 <meta name="description" content="Réseau informatique, cours et exercices interactifs de deux niveaux : matériels d'un réseau, adressage, protocoles et services.">
 {style}
-{CONTENT_CSS.replace("__COURS_CSS__", cours_css)}
+{CONTENT_CSS.replace("__COURS_CSS__", cours_css + exos_css)}
 </head>
 <body class="no-mode">
 
@@ -1376,6 +1403,7 @@ def build(cours, exos, sortie, note=""):
 {ETIQUETTES_JS}
 {qcm.images_js(exos, AIDES_QCM)}
 {qcm.QCM_JS}
+{exos_js}
 </body>
 </html>
 """
@@ -1391,6 +1419,13 @@ def build(cours, exos, sortie, note=""):
         vides = [n for n, v in (("cours", cours), ("exercices", [e for e in exos if not e.get("etude")]),
                                 ("études de cas", [e for e in exos if e.get("etude")])) if not v]
         print(f"  en cours d'édition : {', '.join(vides)}")
+
+
+# ============================================================ CONTENU
+# Chaque cours et chaque exercice vit dans son module, qui reçoit celui-ci (blocs, correcteurs, éléments de cours) :
+# pas d'import circulaire. L'ordre des listes est celui des cartes de l'accueil.
+_G = sys.modules[__name__]
+COURS.append(cours_reseaux.cours(_G))
 
 
 if __name__ == "__main__":
