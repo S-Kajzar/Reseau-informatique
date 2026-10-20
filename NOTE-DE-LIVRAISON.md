@@ -61,13 +61,127 @@ suivi par git (`.gitignore`), donc pas publié.
   commutateur, serveur), des étiquettes sous l'énoncé, un QCM à réponse unique (DHCP) et un à réponses multiples
   (adresses privées).
 
+## Cours 1 — Réseaux informatiques (Niveau 1, `?ex=cours-reseaux`)
+
+**Source** : le cours Word « Séquence 5 — Réseaux informatiques : de la liaison point-à-point au modèle OSI »
+(environ 2 h). Son texte est repris section par section (liaison point-à-point, mise en réseau, WAN et Internet,
+adressage IP et LAN, communication entre logiciels, modèle OSI), avec la problématique, les objectifs et les
+prérequis ; viennent s'y ajouter une synthèse en six cartes à retourner, deux jeux (« Adresse MAC ou adresse IP ? »,
+8 lignes ; « À quelle couche du modèle OSI ? », 8 lignes) et un quiz de 10 questions. Liens en pied de page vers le
+QCM 1.1 et l'exercice 1.2.
+
+Les 18 figures du Word sont des captures de manuel : aucune n'est reprise, toutes sont **redessinées en SVG** et
+rendues interactives (`src/cours_reseaux.py`), numérotées de 1 à 18 :
+- **liaison point-à-point** : full-duplex ou half-duplex (les données circulent dans les deux sens, ou à tour de
+  rôle) ; câble à paires torsadées et fibre optique, parties montrées depuis la légende, signal électrique et lumière
+  qui se réfléchit dans le cœur ; portée du Bluetooth et du Wi-Fi (on déplace l'ordinateur) ; simulateur de débit
+  (fichier, liaison, quantité en Mbit, durée, calcul détaillé, transfert animé) ;
+- **mise en réseau** : quatre machines reliées à un switch — on choisit l'émetteur et le destinataire, la trame porte
+  l'adresse MAC du destinataire, le switch lit sa table et ne l'envoie que vers le bon port ; les quatre topologies
+  (étoile, anneau, bus, maillé), dont on coupe les liaisons ou le nœud central : le texte dit quelles machines
+  communiquent encore, les groupes isolés prennent une couleur ; carte-réseau et adresse MAC, octet par octet en
+  binaire (48 bits, trois octets du fabricant) ;
+- **WAN et Internet** : un message de A1 à B3, trame dans les LAN, paquet sur le WAN ; une box qu'on ouvre (modem,
+  routeur, switch, hotspot) ; un maillage de 17 routeurs (passerelles et « ronds-points ») : on choisit deux
+  passerelles, la route s'affiche et le paquet la suit, on coupe une liaison et la route change, ou disparaît ; les
+  dorsales intercontinentales en schéma ; « est-ce une adresse IP ? » ; découpage net-ID / host-ID par le masque,
+  avec les trois exemples du Word et le nombre de machines ;
+- **adressage IP et LAN** : traduction d'adresses — l'adresse privée de l'émetteur, inscrite sur le paquet, devient
+  l'adresse publique de la box au passage du routeur, et l'inverse au retour ; « adresse privée ou publique ? » ;
+  sous-réseaux logiques : les quatre PC du Word, adresses modifiables, couleurs par net-ID, tableau de qui peut
+  communiquer avec qui, message envoyé ou refusé ;
+- **communication entre logiciels** : un navigateur demande une page à un serveur (requête, recherche sur le disque,
+  réponse 200 avec le code HTML, ou 404), les messages HTTP s'affichent ; TCP découpe « Bonjour, comment ça va ? »
+  en quatre segments numérotés qui n'arrivent pas dans l'ordre, chacun est acquitté, un segment perdu est renvoyé ;
+- **modèle OSI** : les sept couches de l'émetteur et du destinataire alignées sur le tableau (rôle, unité,
+  technologies), un message qui descend puis remonte les couches ; l'encapsulation étape par étape, puis la
+  désencapsulation, chaque en-tête cliquable ; le parcours PC1 → SW1 → R1 → SW2 → PC2 à travers les couches, d'un
+  trait ou appareil par appareil.
+
+Graphismes : textes des schémas sur un halo blanc (lisibles quand un câble les croise) ; animations suspendues si le
+système demande de réduire les mouvements ; à l'impression, les contenus des onglets et de la box sont imprimés.
+
+Corrections et décisions :
+- **Non repris** : les champs « Nom, Prénom, Groupe », le tableau des compétences (intitulés « à reprendre du
+  référentiel », jamais remplis), les documents ressources (pages d'un manuel, site extérieur) et les modalités
+  (consignes d'enseignant), comme dans les cours du dépôt Chaîne fonctionnelle ; « le réseau local de votre lycée »
+  devient « de votre établissement ».
+- **Adresses MAC d'exemple** : celles du Word (29:87:a5:ef:18:5d ; 13-4F-DE-A5-65-89, 53-40-…, F3-40-… sur la figure
+  du switch) ont un premier octet impair, qui désigne en réalité une adresse de groupe (multicast) et non une carte.
+  Elles deviennent 28:87:a5:ef:18:5d, 10-4F-DE-A5-65-89, 10-4F-DE-D5-44-8B, 50-40-DE-C5-44-8B, F0-40-A7-15-4E-80
+  (premier octet multiple de 4 : adresse individuelle, attribuée par le fabricant ; PC1 et PC2 gardent le même
+  fabricant).
+- **« Elle ne peut pas être changée »** (adresse MAC) devient « elle est gravée sur la carte-réseau par son fabricant »
+  : un logiciel peut annoncer une autre adresse, mais celle de la carte ne change pas ; le contraste avec l'adresse IP,
+  « adresse logique », est conservé.
+- **IPv6** : « en cours de déploiement depuis 1998, elle couvre actuellement 10 % du trafic » devient « normalisée en
+  1998, toujours en cours de déploiement, de l'ordre de 40 % du trafic des grands services en ligne » (le chiffre du
+  Word était ancien).
+- **HTTP** : « le protocole gérant les échanges liés à Internet » devient « qui gère les échanges du Web » (Internet
+  porte bien d'autres échanges : courrier, jeux, vidéo…).
+- **TCP** : « pour chaque paquet reçu, faire envoyer un accusé de réception » devient « pour chaque segment reçu »
+  (l'unité de TCP, définie juste avant).
+- **Encapsulation** : la figure du Word nomme la couche 3 « Internet » ; elle reprend le nom du modèle OSI, « Réseau ».
+- **Fibre optique** : la légende « âme creuse » de la figure, ambiguë, n'est pas reprise ; la figure redessinée
+  nomme la fibre de verre, la gaine intérieure, la décharge de traction (fibres de renfort) et la gaine extérieure.
+- **Carte des dorsales** (figure 7 du Word, « source : CC BY-SA 2.0 » sans auteur) : remplacée par un schéma des
+  principales dorsales entre les continents, annoncé comme tel.
+- **Compléments** : analogies du téléphone et du talkie-walkie (duplex) ; tableau Bluetooth / Wi-Fi et portées en
+  ordres de grandeur ; « un octet = 8 bits » sous la formule du débit ; les deux adresses réservées d'un réseau
+  (2<sup>8</sup> − 2 = 254) ; la traduction d'adresses (NAT), nommée ; le rôle des quatre appareils de la box ; ce
+  que contient chaque en-tête (MAC, IP, numéro de segment, contrôle d'erreur).
+
+## QCM 1.1 — Réseaux informatiques (Niveau 1, `?ex=qcm-reseaux`)
+
+Écrit sur le cours 1 (`src/qcm_reseaux.py`), premier exercice de la rubrique : six parties qui suivent le plan du
+cours, pondérées par leur durée (9, 9, 10, 7, 5 et 7 min, soit 47 min), 47 questions d'un point, dont 9 à réponses
+multiples (il faut toutes les bonnes, et elles seules). Les exemples sont ceux du cours (débit de 20 Mo en 4 s,
+adresses des figures, masques, couches) ; chaque question a son explication. Une figure (la topologie en bus) est
+dessinée dans la question. Pas de documents à consulter : le QCM vérifie ce qui a été retenu.
+
+## Exercice 1.2 — Mon premier site (Niveau 1, `?ex=site-html`)
+
+**Objectif** : réaliser un petit site depuis un éditeur intégré à la page (`src/site_html.py`). Le site « Mon
+réseau » présente le réseau de la maison : une page d'accueil (`index.html`), une page « Le matériel »
+(`materiel.html`, avec le tableau des appareils et de leurs adresses IP) et une feuille de style (`style.css`) ; une
+image est fournie (`reseau.png`, l'illustration de l'accueil du site du cours).
+- **L'éditeur** : onglets des trois fichiers, coloration du code HTML et CSS, numéros de ligne, Tab pour deux espaces
+  (Échap puis Tab pour quitter l'éditeur), retrait conservé à la ligne, « Réinitialiser ce fichier », « Télécharger
+  mon site (.zip) » (archive des trois fichiers et de l'image, produite dans la page). Les éditeurs des quatre parties
+  partagent les mêmes fichiers.
+- **L'aperçu** : il joue le rôle du navigateur, se met à jour pendant la frappe, applique la feuille de style et
+  l'image ; ses liens mènent d'une page à l'autre (bouton de retour), une page absente donne une erreur 404 (lien avec
+  la partie 5 du cours). L'aperçu est une iframe isolée qui n'exécute aucun script.
+- **La notation** : 4 parties (le squelette de l'accueil, son contenu, la seconde page et les liens, la mise en
+  forme ; 8, 14, 15 et 11 min), 8 questions, 23 critères d'un point, vérifiés dans le code (une valeur CSS fausse,
+  ignorée par le navigateur, ne compte pas). Le script de l'éditeur inscrit son verdict dans la case masquée de chaque
+  critère ; le moteur du gabarit corrige ces cases comme les autres : entraînement (un bouton « Faire vérifier mon
+  code » par question, définitif), examen (tout est vérifié à la remise), note pondérée, impression (le code de chaque
+  partie remplace l'éditeur). Tant que le fichier d'un critère n'a pas été modifié, sa case reste vide : le gabarit
+  refuse alors la validation (« Complète au moins une case »).
+- **Documents** : DP1, le site à réaliser (plan des pages) ; DT1, les balises HTML (squelette, tableau des balises) ;
+  DT2, les règles CSS (syntaxe, propriétés, couleurs).
+- Rien n'est enregistré dans le navigateur, comme pour tout le site : les consignes invitent à télécharger le site
+  avant de fermer la page.
+
+## Compléments du générateur
+
+- `GRP(…, auto=True)` : critères vérifiés par le script d'un exercice (cases masquées « oui » / « non »), avec leur
+  verdict ☑ / ☒ et, à la correction, un exemple de code juste.
+- Un exercice peut apporter son script et son style (`js`, `css`, ajoutés une seule fois à la page) et le nom de ses
+  points (`unite` : « critères » plutôt que « cases »).
+- `qcm.QCM(…, fig=…)` : une figure HTML (un schéma SVG) sous l'énoncé.
+- Les contenus vivent dans leurs modules et s'inscrivent dans la section « CONTENU » de `src/generer.py`.
+
 ## Images
 
 L'illustration de l'accueil est dessinée pour le site, sans image extérieure ni question de droits
 (`src/images/originaux/accueil.svg` : postes clients, serveur, imprimante, point d'accès sans fil, commutateur,
 routeur, Internet) ; elle est rendue en PNG par `outils/captures.js`. `outils/preparer-images.sh` en tire
-l'illustration de l'accueil (1120 × 620) et, par recadrage, les images des trois cartes « En cours d'édition »
-(480 × 270), grisées par la page. Poids : `index.html` 312 Kio (186 Kio d'images).
+l'illustration de l'accueil (1120 × 620) et, par recadrage, les images des cartes « En cours d'édition » (480 × 270),
+grisées par la page. Les cartes des contenus sont tirées de leurs figures, photographiées dans la page par
+`outils/captures.js` : le parcours d'un message à travers les couches (cours 1), le maillage de routeurs (QCM 1.1),
+l'éditeur du site avec son aperçu (exercice 1.2). Poids : `index.html` 785 Kio (327 Kio d'images).
 
 ## Vérifications effectuées
 
@@ -76,17 +190,27 @@ l'illustration de l'accueil (1120 × 620) et, par recadrage, les images des troi
   étiquettes (chaque case en accepte au moins une, l'étiquette montrée sur un schéma corrigé est juste) ; correcteurs
   du modèle : mots-clés, faute de frappe, mot interdit, nombre, adresses (192.168.11.2 refusée pour 192.168.1.12),
   étiquettes (la bonne est la seule acceptée de sa liste, ordre alphabétique), QCM à réponse unique et multiple.
-- `tests/navigateur.test.js` (Playwright, Chromium) : 9 parcours, tous réussis — accueil publié (trois rubriques,
-  une carte « En cours d'édition » par rubrique vide, cartes illustrées de même taille, téléphone, aucune mention de
-  diplôme ou d'épreuve) ; adresse inconnue ; chaque cours et chaque exercice proposés par l'accueil publié et par la
-  page modèle s'ouvrent, en entraînement et en examen ; accueil du modèle ; cours modèle (cartes, binaire, jeu, quiz
-  ★★★, impression, lien vers l'exercice) ; exercice modèle en entraînement (réponse vide refusée, réponse fausse,
-  confirmation des cases vides, schéma et bandeau, liste qui refuse une case d'une autre liste, glisser-déposer,
-  échange, QCM, 12,0/20 puis 20,0/20) ; en examen (rien ne filtre avant la remise, y compris à l'impression ;
-  remise en deux temps ; chronomètre arrêté ; 16,1/20) ; documents et téléphone.
+- `node --test tests/qcm.test.js` : 4 tests — QCM 1.1 : 6 parties, 47 questions, 47 min ; pour chaque question à
+  réponse unique, la bonne proposition acceptée et toutes les autres refusées ; réponses multiples exigées complètes
+  et sans intrus ; réponses vérifiées sur le cours (débit, adresses privées, net-ID, box, couches) ; une explication
+  par question.
+- `tests/navigateur.test.js` (Playwright, Chromium) : 9 parcours — accueil publié (trois rubriques, cartes illustrées
+  de même taille, « En cours d'édition » pour une rubrique vide, téléphone, aucune mention de diplôme ou d'épreuve) ;
+  adresse inconnue ; chaque cours et chaque exercice de l'accueil publié et de la page modèle s'ouvrent, en
+  entraînement et en examen ; page modèle (cours, exercice en entraînement 12,0/20 puis 20,0/20, en examen 16,1/20,
+  documents, téléphone).
+- `tests/reseaux.test.js` (Playwright, Chromium) : 12 parcours — cours 1 (sections, figures numérotées de 1 à 18,
+  aucune image du Word, corrections, téléphone ; chaque figure manipulée et son résultat vérifié : duplex, supports,
+  portée, débit, switch, topologies coupées, adresse MAC, WAN, box, routage et route coupée, dorsales, adresse IP,
+  découpage, NAT, adresses privées, sous-réseaux, HTTP 200 et 404, TCP avec segment perdu, OSI, encapsulation,
+  parcours ; jeux, quiz ★★★, impression) ; QCM 1.1 (réponse fausse expliquée, 20,0/20, examen sur la première partie
+  3,8/20) ; exercice 1.2 (critères vides au départ et validation refusée, un titre faux, éditeurs synchronisés,
+  aperçu avec l'image et la feuille de style, liens et retour, couleur CSS mal écrite refusée, 18,9/20, critère validé
+  figé ; erreur 404, clavier, coloration, réinitialisation, archive .zip, impression du code, téléphone ; examen
+  3,3/20).
 - Aucune erreur JavaScript dans aucun parcours.
 
 ## À faire
 
-- La publication GitHub Pages se déclenche sur la branche `main` : le dépôt ne l'avait pas encore à la livraison.
-- Ajouter les cours et les exercices à mesure qu'ils arrivent, avec l'image de leur carte.
+- La publication GitHub Pages se déclenche sur la branche `main` : le dépôt ne l'a pas encore.
+- La rubrique « Études de cas » attend sa première étude.

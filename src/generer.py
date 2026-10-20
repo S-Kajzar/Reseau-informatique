@@ -29,6 +29,8 @@ import unicodedata
 
 import cours_reseaux
 import qcm
+import qcm_reseaux
+import site_html
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 GABARIT = ROOT / "src" / "gabarit-exercice-interactif.html"
@@ -939,7 +941,7 @@ CONTENT_CSS = """<style>
 .grp-auto .grp-l{grid-template-columns:minmax(0,1fr) 5.2em}
 .grp-auto .grp-lab{font-size:.93rem}
 .grp-auto .grp-lab::before{content:"☐"; margin-right:.45em; color:var(--encre-2)}
-.grp-auto .sol.is-ok~*,.grp-auto .grp-l:has(.is-ok) .grp-lab::before{content:"☑"; color:var(--vert)}
+.grp-auto .grp-l:has(.is-ok) .grp-lab::before{content:"☑"; color:var(--vert)}
 .grp-auto .grp-l:has(.is-ko) .grp-lab::before{content:"☒"; color:var(--rouge)}
 .grp-auto .sol .mark{flex:1 1 auto}
 
@@ -1426,6 +1428,7 @@ def build(cours, exos, sortie, note=""):
 # pas d'import circulaire. L'ordre des listes est celui des cartes de l'accueil.
 _G = sys.modules[__name__]
 COURS.append(cours_reseaux.cours(_G))
+EXO_DEFS += [qcm_reseaux.exercice(_G), site_html.exercice(_G)]
 
 
 if __name__ == "__main__":

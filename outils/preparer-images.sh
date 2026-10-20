@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Prépare les images intégrées dans la page (ImageMagick 6 requis).
-#   - src/images/originaux/       : dessins du site (SVG) et leurs rendus PNG en double définition (outils/captures.js),
-#                                   figures d'origine des cours et des exercices à venir
+#   - src/images/originaux/       : dessins du site (SVG) et leurs rendus PNG en double définition, figures
+#                                   photographiées dans la page (outils/captures.js)
 #   - src/images/accueil.png      : illustration de la page d'accueil (un réseau local)
 #   - src/images/carte-*.png|jpg  : images des cartes de l'accueil, toutes au même format 480 × 270
 #   outils/captures.js rend d'abord les dessins SVG : NODE_PATH=$(npm root -g) node outils/captures.js
@@ -32,6 +32,11 @@ recadrer() {
 recadrer 1040x585+0+170    carte-cours.png      # point d'accès et appareils sans fil
 recadrer 1120x630+600+500  carte-exercice.png   # commutateur et postes clients
 recadrer 1200x675+1040+40  carte-etude.png      # serveur, routeur et Internet
+
+# 3. Images des cartes des contenus, photographiées dans la page générée (outils/captures.js)
+entiere "$SRC/carte-cours-1.png" carte-cours-1.png                  # cours 1 : parcours du message dans les couches
+remplir "$SRC/carte-qcm.png"     carte-qcm.png  "-colors 256"       # QCM 1.1 : maillage de routeurs
+remplir "$SRC/carte-site.png"    carte-site.png "-colors 256"       # exercice 1.2 : l'éditeur, code et aperçu
 
 find "$OUT" -maxdepth 1 \( -name '*.png' -o -name '*.jpg' \) -printf '%s\n' |
   awk '{s += $1} END {print NR " images, " int(s / 1024) " Kio"}'
