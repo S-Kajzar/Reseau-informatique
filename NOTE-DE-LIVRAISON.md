@@ -68,7 +68,7 @@ suivi par git (`.gitignore`), donc pas publié.
 adressage IP et LAN, communication entre logiciels, modèle OSI), avec la problématique, les objectifs et les
 prérequis ; viennent s'y ajouter une synthèse en six cartes à retourner, deux jeux (« Adresse MAC ou adresse IP ? »,
 8 lignes ; « À quelle couche du modèle OSI ? », 8 lignes) et un quiz de 10 questions. Liens en pied de page vers le
-QCM 1.1 et l'exercice 1.2.
+QCM 1.1, les exercices 1.2, 1.3 et 2.1 et l'étude 1.
 
 Les 18 figures du Word sont des captures de manuel : aucune n'est reprise, toutes sont **redessinées en SVG** et
 rendues interactives (`src/cours_reseaux.py`), numérotées de 1 à 18 :
@@ -164,6 +164,67 @@ image est fournie (`reseau.png`, l'illustration de l'accueil du site du cours).
 - Rien n'est enregistré dans le navigateur, comme pour tout le site : les consignes invitent à télécharger le site
   avant de fermer la page.
 
+## Exercice 1.3 — Le plan d'adressage de la maison (Niveau 1, `?ex=adressage-maison`)
+
+L'entraînement direct au cours 1 (`src/exo_adressage.py`) : le réseau d'une maison, une box (modem, routeur, switch,
+point d'accès Wi-Fi) et six appareils. 4 parties (10, 12, 12 et 11 min, soit 45 min), 16 questions, 28 cases.
+- **Le schéma du réseau** : les appareils de la box et le type de chaque liaison, étiquettes posées sur la figure
+  (chaque appareil de la box a son pictogramme : la liaison venant d'Internet arrive au modem) ; la topologie.
+- **Le tableau d'adressage** : net-ID et host-ID par le masque, adresse de la box dans le réseau local, adresse
+  publique, cinq adresses à classer privées ou publiques (172.40.1.2, hors de la plage 172.16 à 172.31, est publique).
+- **Des adresses à choisir** : nombre de machines (254), adresse libre suivante, une tablette réglée à la main dans
+  un autre net-ID (elle ne communique plus), sa correction, le masque 255.255.0.0.
+- **Le débit de la connexion** : durées de téléchargement d'un jeu de 50 Go par câble (400 s) et en Wi-Fi (1 333 s),
+  débit d'une transmission (48 Mbit/s), pourquoi le Wi-Fi est plus lent.
+- Documents : DP1, le réseau de la maison (appareils, liaisons, adresses, débits) ; DT1, adresses IP, masques et débit.
+
+## Exercice 2.1 — Suivre une requête à travers le réseau (Niveau 2, `?ex=requete-http`)
+
+L'approfondissement du modèle OSI (`src/exo_requete.py`) : l'ordinateur portable de la maison demande une page à un
+serveur web, dans un centre de données, à travers la box, les routeurs d'Internet, le routeur du centre et un switch.
+4 parties (9, 11, 12 et 13 min, soit 45 min), 13 questions, 30 cases, trois schémas à compléter.
+- **Les appareils et leurs couches** : les couches que met en œuvre chaque appareil du chemin (1 à 7, 1 à 3, 1 et 2),
+  posées sur le schéma ; qui lit l'adresse IP, qui lit l'adresse MAC.
+- **L'encapsulation de la requête** : l'ordre des éléments de la trame, la couche qui ajoute chacun, le nombre de
+  segments TCP de la réponse (6 000 octets en segments de 1 500), ce qui se passe quand un segment se perd.
+- **Les adresses dans la maison** et **au centre de données, puis la réponse** : les adresses MAC et IP de la trame
+  (étiquettes « adresse (appareil) » posées sur la trame dessinée), de l'ordinateur à la box, puis du routeur du
+  centre au serveur ; ce qui a changé entre les deux (adresse IP source traduite par la box, en-tête Ethernet refait
+  sur chaque réseau) ; les adresses de la réponse.
+- **Le trajet animé** : une figure rejoue le trajet de la requête et de la réponse, étape par étape, avec les
+  adresses inscrites sur le message. Elle montre les réponses : son bouton reste verrouillé tant que les questions
+  des parties 3 et 4 ne sont pas corrigées (ou la copie d'examen remise).
+- Ce que l'exercice ajoute au cours (DT1) : l'adresse MAC identifie les machines d'un même LAN, donc l'en-tête
+  Ethernet est refait sur chaque réseau traversé, alors que les adresses IP restent celles des extrémités, sauf à la
+  box. Les adresses MAC d'exemple ont un premier octet multiple de 4 (adresses individuelles) ; celles des serveurs
+  et routeurs d'Internet sont prises dans les plages réservées à la documentation (203.0.113.0/24).
+- Documents : DP1, la requête à suivre (adresses de chaque appareil) ; DT1, couches, adresses et encapsulation.
+
+## Étude 1 — Le réseau d'une médiathèque (Niveau 2, `?ex=etude-mediatheque`)
+
+La première étude de cas (`src/etude_mediatheque.py`) : la médiathèque rénove son réseau. Un bâtiment principal
+(espace multimédia de 10 postes, accueil et Wi-Fi des visiteurs, local technique où arrive la fibre de l'opérateur)
+et une annexe, à 160 m, où travaille le personnel (6 postes, serveur de fichiers, imprimante). Deux réseaux séparés
+par un même routeur, qui bloque les messages du réseau public vers celui du personnel. 4 parties (15, 15, 20 et
+15 min, soit 1 h 05), 20 questions, 32 cases.
+- **L'architecture du réseau** : sur le plan des deux bâtiments, le matériel du local technique (un routeur : il relie
+  des réseaux différents, le modem ne le fait pas), de l'espace multimédia et de l'accueil, le support de la liaison
+  de 160 m (fibre : plus de 100 m de câble Ethernet) et de celle des postes ; la topologie.
+- **Le plan d'adressage** : six adresses à écrire d'après les règles du dossier (routeur côté personnel et côté
+  public, serveur, imprimante, postes) ; la plage Wi-Fi prévue (100 adresses) ne suffit pas pour 120 visiteurs, il
+  faut en choisir une autre dans le réseau public ; ce que peut faire le téléphone d'un visiteur ; pourquoi deux
+  réseaux.
+- **Le choix des matériels et les débits** : le nombre de ports du switch de l'espace multimédia (12), le moins cher
+  des switchs qui convient à chaque bâtiment (l'annexe a besoin d'un port fibre), le débit reçu aux heures
+  d'affluence (750 Mbit/s, la fibre suffit), la durée de la sauvegarde nocturne (au débit d'émission, 1 440 s) et
+  d'une copie sur le réseau du personnel (16 s).
+- **Les échanges à travers le routeur** : pour cinq échanges, transmis, bloqué ou sans passer par le routeur ; ce
+  que lit le switch, la couche où décide le routeur, l'adresse avec laquelle un poste est vu sur Internet, ce qui
+  change quand une requête traverse le routeur.
+- Documents : DP1, la médiathèque et ses besoins (plan d'adressage prévu, abonnement fibre) ; DT1, les matériels et
+  les quatre switchs proposés (ports cuivre et fibre, prix) ; DT2, les supports de transmission (débit, longueur).
+  L'adresse publique du routeur est prise dans une plage réservée à la documentation (198.51.100.0/24).
+
 ## Compléments du générateur
 
 - `GRP(…, auto=True)` : critères vérifiés par le script d'un exercice (cases masquées « oui » / « non »), avec leur
@@ -181,13 +242,17 @@ routeur, Internet) ; elle est rendue en PNG par `outils/captures.js`. `outils/pr
 l'illustration de l'accueil (1120 × 620) et, par recadrage, les images des cartes « En cours d'édition » (480 × 270),
 grisées par la page. Les cartes des contenus sont tirées de leurs figures, photographiées dans la page par
 `outils/captures.js` : le parcours d'un message à travers les couches (cours 1), le maillage de routeurs (QCM 1.1),
-l'éditeur du site avec son aperçu (exercice 1.2). Poids : `index.html` 785 Kio (327 Kio d'images).
+l'éditeur du site avec son aperçu (exercice 1.2), le schéma de la maison et celui de la médiathèque, étiquettes
+posées et validées (exercice 1.3, étude 1), le trajet animé de la requête au-dessus de sa trame complétée
+(exercice 2.1). Poids : `index.html` 1 066 Kio (421 Kio d'images).
 
 ## Vérifications effectuées
 
 - `node --test tests/correction.test.js` : 9 tests — gabarit identique (empreinte) ; pour `index.html` et
   `modele.html`, configuration de chaque exercice (durées, points, correcteurs connus, cases présentes dans la page),
-  étiquettes (chaque case en accepte au moins une, l'étiquette montrée sur un schéma corrigé est juste) ; correcteurs
+  étiquettes (chaque case en accepte au moins une, l'étiquette montrée sur un schéma corrigé est juste ; chaque
+  exercice a son gabarit, où les listes d'un schéma portent des noms communs à tous : une case est rapprochée de la
+  liste de son exercice) ; correcteurs
   du modèle : mots-clés, faute de frappe, mot interdit, nombre, adresses (192.168.11.2 refusée pour 192.168.1.12),
   étiquettes (la bonne est la seule acceptée de sa liste, ordre alphabétique), QCM à réponse unique et multiple.
 - `node --test tests/qcm.test.js` : 4 tests — QCM 1.1 : 6 parties, 47 questions, 47 min ; pour chaque question à
@@ -208,9 +273,17 @@ l'éditeur du site avec son aperçu (exercice 1.2). Poids : `index.html` 785 Kio
   aperçu avec l'image et la feuille de style, liens et retour, couleur CSS mal écrite refusée, 18,9/20, critère validé
   figé ; erreur 404, clavier, coloration, réinitialisation, archive .zip, impression du code, téléphone ; examen
   3,3/20).
+- `tests/exercices.test.js` : 11 tests, correcteurs (Node) puis parcours (Playwright) — exercices 1.3 et 2.1, étude 1 :
+  parties, durées et cases ; une copie juste dont chaque réponse est acceptée ; pour chaque case à étiquette, la bonne
+  est la seule acceptée de sa liste ; formes admises (unités, espaces) et erreurs courantes refusées (adresse voisine,
+  mauvais réseau, durée au mauvais débit) ; dans le navigateur, la copie juste vaut 20,0/20 pour chacun ; exercice
+  1.3 : mauvaise étiquette corrigée sur le schéma ; exercice 2.1 : animation verrouillée jusqu'à la correction de la
+  dernière question de la partie 4, puis trajet complet et adresses de la dernière étape ; en examen, déverrouillée à
+  la remise ; étude 1 : carte de la rubrique « Études de cas », documents, examen sur la première partie 4,6/20
+  (15 min sur 65).
 - Aucune erreur JavaScript dans aucun parcours.
 
 ## À faire
 
-- La publication GitHub Pages se déclenche sur la branche `main` : le dépôt ne l'a pas encore.
-- La rubrique « Études de cas » attend sa première étude.
+- La publication GitHub Pages se déclenche sur la branche `main` : elle aura lieu à la fusion de la demande de fusion
+  qui apporte ces contenus.

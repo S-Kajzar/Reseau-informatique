@@ -10,15 +10,18 @@ depuis `index.html`. Tant qu'une rubrique de l'accueil est vide, une carte « En
 | `?ex=cours-reseaux` | Cours 1 — Réseaux informatiques (Niveau 1), de la liaison point-à-point au modèle OSI : le cours Word repris section par section, 18 figures redessinées et interactives (duplex, supports, portée, débit, switch et adresses MAC, topologies que l'on coupe, box, routage, dorsales, découpage IP, NAT, sous-réseaux logiques, HTTP, TCP, OSI, encapsulation, parcours des couches), synthèse, deux jeux, quiz |
 | `?ex=qcm-reseaux` | QCM 1.1 — Réseaux informatiques (Niveau 1) : 6 parties, 47 questions, 47 min |
 | `?ex=site-html` | Exercice 1.2 — Mon premier site (Niveau 1) : deux pages HTML et une feuille de style écrites dans un éditeur intégré, aperçu en direct, 23 critères vérifiés dans le code, 48 min |
+| `?ex=adressage-maison` | Exercice 1.3 — Le plan d'adressage de la maison (Niveau 1) : schéma de la box et de ses appareils, net-ID et host-ID, adresses privées et publiques, durées de téléchargement ; 16 questions, 28 cases, 45 min |
+| `?ex=requete-http` | Exercice 2.1 — Suivre une requête à travers le réseau (Niveau 2) : couches de chaque appareil, encapsulation, adresses MAC et IP des trames de la maison et du centre de données, traduction d'adresses, trajet animé une fois la copie corrigée ; 13 questions, 30 cases, 45 min |
+| `?ex=etude-mediatheque` | Étude 1 — Le réseau d'une médiathèque (Niveau 2) : deux bâtiments, deux réseaux, un routeur qui filtre ; matériels et supports sur le plan, plan d'adressage, choix des switchs, débits, échanges transmis ou bloqués ; 20 questions, 32 cases, 1 h 05 |
 | `modele.html` | page modèle, non publiée (`python3 src/generer.py --modele`) : un cours et un exercice qui montrent chaque élément disponible |
 
-La rubrique « Études de cas » annonce une étude « En cours d'édition ». Chaque exercice propose le mode entraînement
-ou le mode examen, avec sa propre note pondérée par la durée de ses parties. Corrections apportées au cours d'origine
+Chaque exercice propose le mode entraînement ou le mode examen, avec sa propre note pondérée par la durée de ses parties. Corrections apportées au cours d'origine
 et décisions : [`NOTE-DE-LIVRAISON.md`](NOTE-DE-LIVRAISON.md).
 
 ## Ajouter un contenu
 
-Un cours ou un exercice vit dans son module (`src/cours_reseaux.py`, `src/qcm_reseaux.py`, `src/site_html.py`), qui
+Un cours ou un exercice vit dans son module (`src/cours_reseaux.py`, `src/qcm_reseaux.py`, `src/site_html.py`,
+`src/exo_adressage.py`, `src/exo_requete.py`, `src/etude_mediatheque.py`), qui
 reçoit le module `generer` (blocs, correcteurs, éléments des cours) ; il s'inscrit dans la section « CONTENU » de
 `src/generer.py`, dans `COURS` ou `EXO_DEFS` (l'ordre est celui des cartes de l'accueil). `src/modele.py` donne un
 exemple complet de chaque élément, et `python3 src/generer.py --modele` l'affiche dans `modele.html`.
@@ -69,11 +72,12 @@ node --test tests/correction.test.js                          # gabarit, configu
 node --test tests/qcm.test.js                                 # QCM 1.1 : bonnes réponses acceptées, toutes les autres refusées
 NODE_PATH=$(npm root -g) node --test tests/navigateur.test.js # accueil, page modèle : cours, entraînement, examen, étiquettes, schéma, QCM, documents
 NODE_PATH=$(npm root -g) node --test tests/reseaux.test.js    # cours 1 (chaque figure), QCM 1.1, exercice 1.2 (éditeur, aperçu, critères, .zip)
+NODE_PATH=$(npm root -g) node --test tests/exercices.test.js  # exercices 1.3 et 2.1, étude 1 : correcteurs, copies justes, animation, examen
 ```
 
 `correction.test.js` et `navigateur.test.js` régénèrent `modele.html`. Les tests vérifient l'accueil publié tel qu'il
-est (et chaque cours ou exercice qu'il propose), chaque mécanisme sur la page modèle, puis le cours 1, le QCM 1.1 et
-l'exercice 1.2 : un sujet entièrement juste donne 20/20, sans erreur JavaScript.
+est (et chaque cours ou exercice qu'il propose), chaque mécanisme sur la page modèle, puis le cours 1, le QCM 1.1,
+les exercices 1.2, 1.3 et 2.1 et l'étude 1 : un sujet entièrement juste donne 20/20, sans erreur JavaScript.
 
 ## Organisation
 
@@ -84,6 +88,9 @@ l'exercice 1.2 : un sujet entièrement juste donne 20/20, sans erreur JavaScript
 | `src/cours_reseaux.py` | cours 1 : texte, figures SVG, comportement et style |
 | `src/qcm_reseaux.py` | QCM 1.1 : les 47 questions et leurs explications |
 | `src/site_html.py` | exercice 1.2 : l'éditeur du site (coloration, aperçu, liens, archive .zip), les critères vérifiés, les documents |
+| `src/exo_adressage.py` | exercice 1.3 : le schéma de la maison, les questions, les documents |
+| `src/exo_requete.py` | exercice 2.1 : le chemin et les trames à compléter, le trajet animé, les documents |
+| `src/etude_mediatheque.py` | étude 1 : le plan de la médiathèque, les questions, les documents (besoins, matériels, supports) |
 | `src/qcm.py` | questions à propositions : rendu, correction par le gabarit, images partagées |
 | `src/modele.py` | cours et exercice modèles (page `modele.html`) : un exemple de chaque élément |
 | `src/images/originaux/` | dessin de l'accueil (`accueil.svg`, un réseau local) et son rendu ; figures photographiées pour les cartes |

@@ -1027,7 +1027,10 @@ def render(g):
 {g.course_fiche(OBJECTIFS, PREREQUIS)}
 {nav}
 {s1}{s2}{s3}{s4}{s5}{s6}{s7}{s8}{s9}
-{g.course_foot(("?ex=qcm-reseaux", "S'entraîner : QCM 1.1"), ("?ex=site-html", "Exercice 1.2 : mon premier site"))}
+{g.course_foot(("?ex=qcm-reseaux", "S'entraîner : QCM 1.1"), ("?ex=site-html", "Exercice 1.2 : mon premier site"),
+              ("?ex=adressage-maison", "Exercice 1.3 : le plan d'adressage de la maison"),
+              ("?ex=requete-http", "Exercice 2.1 : suivre une requête"),
+              ("?ex=etude-mediatheque", "Étude 1 : le réseau d'une médiathèque"))}
 </div>"""
 
 

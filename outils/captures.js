@@ -2,7 +2,8 @@
 //   - src/images/originaux/accueil.png : rendu du dessin accueil.svg (un réseau local), en double définition ;
 //   - src/images/originaux/carte-*.png : figures photographiées dans la page générée (python3 src/generer.py
 //     d'abord) — le parcours d'un message à travers les couches (cours 1), le maillage de routeurs (QCM 1.1),
-//     l'éditeur du site avec un exemple de code (exercice 1.2).
+//     l'éditeur du site avec un exemple de code (exercice 1.2), le schéma de la maison (exercice 1.3) et celui de
+//     la médiathèque (étude 1), étiquettes posées et validées, le trajet de la requête et sa trame (exercice 2.1).
 //   outils/preparer-images.sh en tire l'illustration de l'accueil et les images des cartes.
 //   python3 src/generer.py && NODE_PATH=$(npm root -g) node outils/captures.js && bash outils/preparer-images.sh && python3 src/generer.py
 const path = require("node:path");
@@ -53,5 +54,29 @@ const EXEMPLE = `<!DOCTYPE html>
   await p.waitForTimeout(800);
   await p.addStyleTag({ content: FIGE + " .ed-etat{display:none}" });
   await p.locator("#partie-1 .ed-corps").screenshot({ path: path.join(ORIG, "carte-site.png") });
+  // un schéma : chaque case reçoit l'étiquette montrée sur le schéma corrigé, puis ses questions sont validées
+  async function schema(ex, num, nom) {
+    await p.goto(PAGE + "?ex=" + ex);
+    await p.click("[data-mode=training]");
+    const plan = `#plan-${num}`;
+    for (const [id, liste, v] of await p.locator(plan + " .dz-f").evaluateAll((l) => l.map((d) => [d.id, d.dataset.bank, d.dataset.attendu]))) {
+      await p.locator(`${plan} #${liste}`).getByRole("button", { name: v, exact: true }).click();
+      await p.click("#" + id);
+    }
+    for (const v of await p.locator(plan + " .btn-plan").all()) await v.click();
+    await p.addStyleTag({ content: FIGE });
+    await p.mouse.move(0, 0);
+    await p.locator(plan + " .plan-canvas").screenshot({ path: path.join(ORIG, nom + ".png") });
+  }
+  await schema("adressage-maison", 1, "carte-ex13");
+  await schema("etude-mediatheque", 1, "carte-etude-1");
+  await schema("requete-http", 3, "carte-ex21-trame");
+  // le trajet : l'animation, déverrouillée, est arrêtée pendant la première étape (de l'ordinateur à la box)
+  await p.evaluate(() => document.body.classList.add("graded"));
+  await p.waitForFunction(() => !document.getElementById("rq-go").disabled);
+  await p.click("#rq-go");
+  await p.waitForTimeout(350);
+  await p.evaluate(() => { window.requestAnimationFrame = () => 0; });
+  await p.locator("#rq-trajet svg").screenshot({ path: path.join(ORIG, "carte-ex21-trajet.png") });
   await b.close();
 })();

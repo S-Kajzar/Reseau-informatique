@@ -37,6 +37,12 @@ recadrer 1200x675+1040+40  carte-etude.png      # serveur, routeur et Internet
 entiere "$SRC/carte-cours-1.png" carte-cours-1.png                  # cours 1 : parcours du message dans les couches
 remplir "$SRC/carte-qcm.png"     carte-qcm.png  "-colors 256"       # QCM 1.1 : maillage de routeurs
 remplir "$SRC/carte-site.png"    carte-site.png "-colors 256"       # exercice 1.2 : l'éditeur, code et aperçu
+entiere "$SRC/carte-ex13.png"    carte-ex13.png                     # exercice 1.3 : le schéma de la maison
+tmp=$(mktemp --suffix=.png)                                          # exercice 2.1 : le trajet, puis la trame
+convert "$SRC/carte-ex21-trajet.png" "$SRC/carte-ex21-trame.png" -background white -gravity center -append "$tmp"
+entiere "$tmp"                   carte-ex21.png
+rm -f "$tmp"
+entiere "$SRC/carte-etude-1.png" carte-etude-1.png                  # étude 1 : le plan de la médiathèque
 
 find "$OUT" -maxdepth 1 \( -name '*.png' -o -name '*.jpg' \) -printf '%s\n' |
   awk '{s += $1} END {print NR " images, " int(s / 1024) " Kio"}'

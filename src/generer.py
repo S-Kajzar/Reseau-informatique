@@ -28,6 +28,9 @@ import types
 import unicodedata
 
 import cours_reseaux
+import etude_mediatheque
+import exo_adressage
+import exo_requete
 import qcm
 import qcm_reseaux
 import site_html
@@ -603,8 +606,8 @@ def render_hub(cours, exos, note=""):
             f'<h2 class="home-choose">Les exercices</h2><div class="ex-grid exo-grid">{cards}</div>'
             f'<h2 class="home-choose">Études de cas</h2><div class="ex-grid etude-grid">{etudes}</div>'
             f'<p class="home-note small">Pastilles : {pastille("Niveau 1").strip()} premier niveau, '
-            f'{pastille("Niveau 2").strip()} niveau approfondi. Les études de cas reprendront des réseaux réels et '
-            "mobiliseront plusieurs notions. Chaque exercice propose le mode entraînement (correction question par "
+            f'{pastille("Niveau 2").strip()} niveau approfondi. Les études de cas reprennent des réseaux réels et '
+            "mobilisent plusieurs notions. Chaque exercice propose le mode entraînement (correction question par "
             "question) ou le mode examen (correction à la remise de la copie). Rien n'est enregistré sur "
             "l'ordinateur.</p>")
 
@@ -1428,7 +1431,8 @@ def build(cours, exos, sortie, note=""):
 # pas d'import circulaire. L'ordre des listes est celui des cartes de l'accueil.
 _G = sys.modules[__name__]
 COURS.append(cours_reseaux.cours(_G))
-EXO_DEFS += [qcm_reseaux.exercice(_G), site_html.exercice(_G)]
+EXO_DEFS += [qcm_reseaux.exercice(_G), site_html.exercice(_G), exo_adressage.exercice(_G),
+             exo_requete.exercice(_G), etude_mediatheque.exercice(_G)]
 
 
 if __name__ == "__main__":
