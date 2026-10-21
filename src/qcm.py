@@ -12,11 +12,12 @@ partagent.
 import json
 
 
-def QCM(stem, opts, correct, explain, multi=None, img=None, hint=None):
+def QCM(stem, opts, correct, explain, multi=None, img=None, hint=None, fig=None):
     """Une question à propositions.
     stem, explain : énoncé et explication (HTML) ; opts : [(repère, texte HTML)] ; correct : repères justes.
     multi : plusieurs réponses à sélectionner (par défaut, s'il y a plusieurs repères justes) ; leurs repères sont
-    alors des nombres (« 1 », « 2 »…). img : (image de src/images, texte alternatif, largeur maximale)."""
+    alors des nombres (« 1 », « 2 »…). img : (image de src/images, texte alternatif, largeur maximale) ;
+    fig : figure HTML (un schéma SVG, par exemple), placée sous l'énoncé."""
     correct = [str(k) for k in correct]
     keys = [str(k) for k, _t in opts]
     assert correct and all(k in keys for k in correct), (stem, correct)
@@ -31,7 +32,7 @@ def QCM(stem, opts, correct, explain, multi=None, img=None, hint=None):
     if hint is None:
         hint = "Plusieurs réponses : sélectionne toutes les bonnes." if multi else "Une seule réponse."
     return {"kind": "grp", "qcm": True, "stem": stem, "hint": hint, "fields": [("Réponse", grader, attendu)],
-            "why": explain, "opts": [(str(k), t) for k, t in opts], "multi": multi, "img": img}
+            "why": explain, "opts": [(str(k), t) for k, t in opts], "multi": multi, "img": img, "fig": fig}
 
 
 def render_qcm(b, h):
@@ -43,6 +44,8 @@ def render_qcm(b, h):
         _src, w, hh = h.image(name)
         img = (f'<figure class="fig" style="max-width:{maxw}px"><img data-qimg="{name}" alt="{h.esc(alt)}" '
                f'width="{w}" height="{hh}"></figure>')
+    if b.get("fig"):
+        img += b["fig"]
     role = "group" if b["multi"] else "radiogroup"
     opts = "".join(f'<button type="button" class="qcm-o" data-k="{h.esc(k)}" role="{"checkbox" if b["multi"] else "radio"}" '
                    f'aria-checked="false"><span class="qcm-k">{h.esc(k)}</span><span class="qcm-t">{t}</span></button>'

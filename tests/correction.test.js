@@ -23,13 +23,20 @@ function lire(nom) {
 }
 const texte = (s) => s.replace(/&#x27;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">")
   .replace(/&amp;/g, "&");
-// listes d'étiquettes de la page, et cases qui les reçoivent (avec l'étiquette montrée sur un schéma corrigé)
+// listes d'étiquettes de la page, et cases qui les reçoivent (avec l'étiquette montrée sur un schéma corrigé) ; chaque
+// exercice est dans son propre gabarit (template), où les listes d'un schéma ont des noms communs à tous (bk-1-1…) :
+// une case est rapprochée de la liste de son exercice (etq)
 function etiquettes(html) {
-  const listes = {};
-  for (const m of html.matchAll(/<div class="bank" id="([^"]+)"[^>]*>([\s\S]*?)<\/div>/g))
-    listes[m[1]] = [...m[2].matchAll(/<button type="button" class="etq"[^>]*>([^<]*)<\/button>/g)].map((x) => texte(x[1]));
-  const cases = [...html.matchAll(/<button type="button" class="dz[^"]*" id="dz-([^"]+)" data-bank="([^"]+)"(?: data-attendu="([^"]*)")?/g)]
-    .map((m) => ({ id: m[1], liste: m[2], attendu: m[3] === undefined ? null : texte(m[3]) }));
+  const listes = {}, cases = [];
+  const exos = [...html.matchAll(/<template id="tpl-parts-[^"]+">([\s\S]*?)<\/template>/g)].map((m) => m[1]);
+  for (const src of exos.length ? exos : [html]) {
+    const ici = {};
+    for (const m of src.matchAll(/<div class="bank" id="([^"]+)"[^>]*>([\s\S]*?)<\/div>/g))
+      ici[m[1]] = [...m[2].matchAll(/<button type="button" class="etq"[^>]*>([^<]*)<\/button>/g)].map((x) => texte(x[1]));
+    for (const m of src.matchAll(/<button type="button" class="dz[^"]*" id="dz-([^"]+)" data-bank="([^"]+)"(?: data-attendu="([^"]*)")?/g))
+      cases.push({ id: m[1], liste: m[2], etq: ici[m[2]], attendu: m[3] === undefined ? null : texte(m[3]) });
+    Object.assign(listes, ici);
+  }
   return { listes, cases };
 }
 
@@ -57,9 +64,9 @@ for (const [nom, { html, G, EXOS }] of Object.entries(PAGES)) {
 
   test(`${nom} : étiquettes — chaque case en accepte au moins une, et celle montrée sur le schéma corrigé`, () => {
     const qcfg = Object.assign({}, ...Object.values(EXOS).map((E) => E.qcfg));
-    const { listes, cases } = etiquettes(html);
+    const { cases } = etiquettes(html);
     for (const c of cases) {
-      const g = qcfg[c.id].grader, liste = listes[c.liste];
+      const g = qcfg[c.id].grader, liste = c.etq;
       assert.ok(liste && liste.length, `${c.id} : liste ${c.liste}`);
       assert.ok(liste.some((e) => G.grade(e, g).ok), `${c.id} : aucune étiquette de « ${c.liste} » n'est juste`);
       if (c.attendu !== null) {
